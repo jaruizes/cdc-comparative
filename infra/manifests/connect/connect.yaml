@@ -1,0 +1,108 @@
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: connectors-pv-claim
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 5Gi
+#---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: c-connect-v1-cm
+  labels:
+    app: c-connect
+    version: v1
+data:
+  CONNECT_BOOTSTRAP_SERVERS: '#BROKERS#'
+  CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
+  CONNECT_REST_PORT: "8083"
+  CONNECT_GROUP_ID: "c-connect-group"
+  CONNECT_CONFIG_STORAGE_TOPIC: "c-connect-configs"
+  CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "2"
+  CONNECT_OFFSET_FLUSH_INTERVAL_MS: "10000"
+  CONNECT_OFFSET_STORAGE_TOPIC: "c-connect-offsets"
+  CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "2"
+  CONNECT_STATUS_STORAGE_TOPIC: "c-connect-status"
+  CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "2"
+  CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+  CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+  CONNECT_PLUGIN_PATH: "/kafka/connect,/usr/share/java,/usr/share/confluent-hub-components"
+  BOOTSTRAP_SERVERS: '#BROKERS#'
+  REST_ADVERTISED_HOST_NAME: "connect"
+  REST_PORT: "8083"
+  GROUP_ID: "c-connect-group"
+  CONFIG_STORAGE_TOPIC: "c-connect-configs"
+  CONFIG_STORAGE_REPLICATION_FACTOR: "2"
+  OFFSET_FLUSH_INTERVAL_MS: "10000"
+  OFFSET_STORAGE_TOPIC: "c-connect-offsets"
+  OFFSET_STORAGE_REPLICATION_FACTOR: "2"
+  STATUS_STORAGE_TOPIC: "c-connect-status"
+  STATUS_STORAGE_REPLICATION_FACTOR: "2"
+  KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+  VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+  PLUGIN_PATH: "/kafka/connect,/usr/share/java,/usr/share/confluent-hub-components"
+  JMXPORT: "1976"
+  JMX_PORT: "1976"
+  KAFKA_OPTS: "-javaagent:/kafka/etc/jmx_prometheus_javaagent.jar=8080:/kafka/etc/config.yml"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: c-connect
+  labels:
+    app: c-connect
+    service: c-connect
+spec:
+  ports:
+    - name: tcp8083
+      protocol: TCP
+      port: 8083
+    - name: tcp8080
+      protocol: TCP
+      port: 8080
+  selector:
+    app: c-connect
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: c-connect-v1
+  labels:
+    app: c-connect
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: c-connect
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: c-connect
+        version: v1
+    spec:
+      securityContext:
+        fsGroup: 200
+      containers:
+        - name: c-connect
+          image: 043264546031.dkr.ecr.eu-west-1.amazonaws.com/cdc/dbz_oracle:1.0
+#          image: confluentinc/cp-kafka-connect:7.4.1
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: c-connect-v1-cm
+          ports:
+            - containerPort: 8083
+            - containerPort: 8080
+#          volumeMounts:
+#            - name: confluent-hub-components
+#              mountPath: /usr/share/confluent-hub-components
+#      volumes:
+#        - name: confluent-hub-components
+#          persistentVolumeClaim:
+#            claimName: connectors-pv-claim

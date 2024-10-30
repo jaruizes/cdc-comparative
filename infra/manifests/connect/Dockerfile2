@@ -1,0 +1,11 @@
+FROM confluentinc/cp-kafka-connect:7.4.1
+
+ENV EXTRA_ARGS="-javaagent:/usr/local/share/jars/jmx_prometheus_javaagent-0.10.jar=9400:/etc/jmx_exporter/jmx_exporter.yaml "
+
+EXPOSE 9400
+EXPOSE 8083
+
+RUN mkdir -p /etc/jmx_exporter
+
+ADD ./jmx_exporter.yaml /etc/jmx_exporter
+ADD ./debezium-connector-oracle/* /usr/share/confluent-hub-components/

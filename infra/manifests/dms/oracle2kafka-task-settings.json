@@ -1,0 +1,24 @@
+{
+  "Logging": {
+    "EnableLogging": true,
+    "EnableLogContext": false,
+    "LogConfiguration": {
+      "TraceOnErrorMb": 10,
+      "EnableTraceOnError": false
+    },
+    "CloudWatchLogGroup": null,
+    "CloudWatchLogStream": null
+  },
+  "FullLoadSettings": {
+    "TargetTablePrepMode": "DO_NOTHING",
+    "MaxFullLoadSubTasks": 8,
+    "CommitRate": 10000,
+    "ParallelLoadThreads": 16
+  },
+  "ChangeProcessingSettings": {
+    "BatchApplyEnabled": true,
+    "BatchApplyPreserveTransaction": true,
+    "MinTransactionSize": 1000,
+    "CommitRate": 1000
+  }
+}

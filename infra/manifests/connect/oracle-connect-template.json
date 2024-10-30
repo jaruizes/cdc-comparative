@@ -1,0 +1,19 @@
+{
+  "name": "oracle-dbz-connector",
+  "config": {
+    "connector.class" : "io.debezium.connector.oracle.OracleConnector",
+    "database.server.name": "ORACLE_DEBEZIUM",
+    "database.hostname": "#ORACLE_ENDPOINT#",
+    "database.port" : "1521",
+    "database.user" : "dbzuser",
+    "database.password" : "dbz",
+    "database.dbname" : "cdc",
+    "topic.prefix" : "dbzk8s",
+    "schema.include.list": "ADMIN",
+    "table.include.list": "ADMIN.TABLA_DBZ_K8S",
+    "tasks.max" : "1",
+    "database.connection.adapter": "logminer",
+    "schema.history.internal.kafka.bootstrap.servers" : "#BROKERS#",
+    "schema.history.internal.kafka.topic": "schema-changes.dbzk8s"
+  }
+}

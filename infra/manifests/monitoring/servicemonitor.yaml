@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: c-connect
+  labels:
+    app: c-connect
+spec:
+  selector:
+    matchLabels:
+      app: c-connect
+      service: c-connect
+  endpoints:
+    - port: tcp8080
+      interval: 10s

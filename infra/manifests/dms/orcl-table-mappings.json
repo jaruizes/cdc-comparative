@@ -1,0 +1,15 @@
+{
+  "rules": [
+    {
+      "rule-type": "selection",
+      "rule-id": "1",
+      "rule-name": "Include schemas ADMIN",
+      "object-locator": {
+        "schema-name": "ADMIN%",
+        "table-name": "TABLA_DMS"
+      },
+      "rule-action": "include",
+      "filters": []
+    }
+  ]
+}
